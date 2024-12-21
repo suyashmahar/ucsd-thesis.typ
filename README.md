@@ -21,19 +21,19 @@
 
 <pre>
 #show: ucsd_thesis.with(
-  <a href="#subject">subject</a>: str | content,
-  <a href="#author">author</a>: str | content,
-  <a href="#title">title</a>: str | content,
-  <a href="#degree">degree</a>: str | content,
-  <a href="#committee">committee</a>: dict,
-  <a href="#abstract">abstract</a>: none | str | content
-  <a href="#dedication">dedication</a>: none | str | content,
-  <a href="#acknowledgement">acknowledgement</a>: none | str | content,
-  <a href="#epigraph">epigraph</a>: none | str | content,
-  <a href="#abbrv">abbrv</a>: none | dict,
-  <a href="#vita">vita</a>: none | str | content,
-  <a href="#publications">publications</a>: none | str | content,
-  <a href="#introduction">introduction</a>: none | str | content,
+  <a href="#subject">subject</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#author">author</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#title">title</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#degree">degree</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#committee">committee</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/dictionary/">dict</a> ,
+  <a href="#abstract">abstract</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>
+  <a href="#dedication">dedication</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#acknowledgement">acknowledgement</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#epigraph">epigraph</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#abbrv">abbrv</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/dictionary/">dict</a> ,
+  <a href="#vita">vita</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#publications">publications</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#introduction">introduction</a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
   doc,
 )
 </pre>
