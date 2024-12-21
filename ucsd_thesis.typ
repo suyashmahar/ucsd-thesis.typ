@@ -6,15 +6,23 @@
 // mjr => major
 
 #let prof_indent = state("ut_prof_indent", 1cm)
+
+// Spacing before the first entry of the chapter in the outline
 #let otln_new_chp_spc = state("ut_otln_new_chp_spc", 1em)
 
+// Spacing between the chapter number and the chapter title in the outline
 #let otln_chp_primary_spc = state("ut_otln_chp_primary_spc", 6em)
+
+// Additional indentation of sub-headings for each level in the outline
 #let otln_chp_secondary_spc = state("ut_otln_chp_secondary_spc", 3em)
 
+// Spacing between the major entries in the table of contents
 #let toc_mjr_spc = state("ut_toc_mjr_spc", 2em)
 
+// Leading of the outline (table of contents, list of figures, etc.)
 #let otln_leading_spc = state("ut_otln_leading_spc", 1em)
 
+// Columns for the list of abbreviations. The first column is for the abbreviation and the second column is for the full form.
 #let abbrv_columns = state("ut_abbrv_columns", (0.25fr, 1fr))
 
 #let CommitteeProf(person, indent: true) = context {
@@ -32,28 +40,63 @@
   linebreak()
 } 
 
-
 #let PreambleChapter(title) = context {
   heading(numbering: none)[#upper(title)]
 }
 
 #let ucsd_thesis(
+  // Subject of the thesis
   subject: "Computer Science",
+
+  // Author of the thesis
   author: "John/Jane Doe",
+
+  // Title of the thesis
   title: "My Little Thesis",
+
+  // Degree of the thesis
   degree: "Doctor of Philosophy",
+
+  // Committee members as dict in the order of appearance
+  // If a member is the chair, set chair to true
+  // Fields: title, name, chair
   committee: (
     (title: "Professor", name: "Jane Doe", chair: true),
     (title: "Professor", name: "John Doe", chair: false)
   ),
+
+  // Abstract of the thesis. Omitted if none
   abstract: none,
+
+  // Dedication of the thesis. Omitted if none
   dedication: none,
+
+  // Acknowledgement of the thesis. Omitted if none
   acknowledgement: none,
+
+  // Epigraph of the thesis. Omitted if none
   epigraph: none,
+
+  // List of abbreviations. Omitted if none
+  // The list will be sorted by the abbreviation.
+  // 
+  // Example:
+  // (
+  //   "UCSD": "University of California San Diego",
+  //   "PhD": "Doctor of Philosophy"
+  // )
   abbrv: none,
+
+  // Vita of the author. Omitted if none
   vita: none,
+
+  // Publications of the author. Omitted if none
   publications: none,
+
+  // Introduction of the thesis. Omitted if none
   introduction: none,
+
+  // The main body of the thesis
   doc,
 ) = {
   set page(
@@ -71,9 +114,6 @@
     #v(1em)
   ]
 
-  // show figure: i-figured.show-figure
-
-  
   show figure: it => block(width: 100%)[#align(center)[
      #par(leading: 1em)[
        #it.body
