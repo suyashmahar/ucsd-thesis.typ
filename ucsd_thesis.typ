@@ -1,5 +1,3 @@
-#import "@preview/i-figured:0.2.4"
-
 // chp => chapter
 // fig => figure
 // spc => spacing
@@ -40,11 +38,40 @@
   linebreak()
 } 
 
-#let PreambleChapter(title) = context {
-  heading(numbering: none)[#upper(title)]
+
+#let PreambleChapter(title, label_name: none) = context {
+  show heading: set align(center)
+  heading(numbering: none, supplement: none)[
+    #{
+      text(weight: "regular", upper(title)) + v(1em)
+    }
+  ]
+}
+
+#let ThesisBibliography(..files, full: false, style: "association-for-computing-machinery", title: "Bibliography") = {
+  par(
+    leading: 0.5em,
+    spacing: 1em
+  )[
+    #show heading.where(level: 1): it => context {
+      pagebreak()
+      text(1.8em, style: "normal", weight: "bold")[
+        #par(leading: 1em, justify: false)[
+          #it.body
+        ]
+      ]
+    }
+    #bibliography(
+      files.pos(),
+      full: full,
+      style: style, 
+      title: title
+    )
+  ]
 }
 
 #let ucsd_thesis(
+  
   // Subject of the thesis
   subject: "Computer Science",
 
@@ -64,7 +91,7 @@
     (title: "Professor", name: "Jane Doe", chair: true),
     (title: "Professor", name: "John Doe", chair: false)
   ),
-
+  
   // Abstract of the thesis. Omitted if none
   abstract: none,
 
@@ -73,7 +100,7 @@
 
   // Acknowledgement of the thesis. Omitted if none
   acknowledgement: none,
-
+  
   // Epigraph of the thesis. Omitted if none
   epigraph: none,
 
@@ -96,39 +123,68 @@
   // Introduction of the thesis. Omitted if none
   introduction: none,
 
-  // The main body of the thesis
+  // Enable field of study section
+  enable_field_of_study: false,
+
+  // Research Topic for Field of Study
+  research_topic: none,
+
+  // Enables List of Table page
+  enable_list_of_tables: true,
+
+  // Enables List of Table page
+  enable_list_of_figures: true,
+  
   doc,
 ) = {
   set page(
     paper: "us-letter",
     number-align: center,
     numbering: none,
+    margin: (top: 1.5in, left: 1in, right: 1in)
   )
-  
+
+  set par(
+    justify: true
+  )
+
   show table.cell: it => text(weight: "regular")[#it]
   
-  show heading: it => [
-    #set align(center)
-    #set text(13pt, weight: "regular")
-    #block(upper(it.body))
-    #v(1em)
-  ]
-
   show figure: it => block(width: 100%)[#align(center)[
-     #par(leading: 1em)[
+     // Captions for Tables should be above the table (Manual, Pg 32)
+     #let body_before_caption = it.kind != table
+     
+     #let caption = none
+     #let body = par(leading: 1em)[
        #it.body
-       #if it.has("caption") {
+     ]
+
+     #set par(leading: 1em)
+
+     #if it.has("caption") {
          if it.caption != none and it.caption.has("body") {
-           it.supplement
-           " "
-           str(counter(heading).get().first())
-           "."
-           str(counter(figure.where(kind: it.kind)).get().first())
-           ": "
-           it.caption.body
+           caption = {
+             text(weight: "bold", {
+                 it.supplement
+                 " "
+                 str(counter(heading).get().first())
+                 "."
+                 str(counter(figure.where(kind: it.kind)).get().first())
+               }
+             )
+             ": "
+             it.caption.body
+           }
          }
        }
-     ]
+
+     #if body_before_caption {
+       body
+       caption
+     } else {
+       caption
+       body
+     }
    ]
   ]
   
@@ -138,12 +194,19 @@
     if it.element.func() == heading { // Table of contents outline
       let element = it.element
       let body = it.body
-  
-      if body.has("text") { // Preamble Chapters
+
+      if element.numbering == none { // Preamble Chapters
         v(toc_mjr_spc.get())
-        body.text + " "
-        box(width: 1fr, it.fill)
-        " " + it.page
+        if body.has("text") { // Bibliography
+          body.text
+          box(width: 1fr, it.fill)
+          " " + it.page
+        } else {
+          let name = body.children.at(1).children.at(0).child
+          name + " "
+          box(width: 1fr, it.fill)
+          " " + it.page
+        }
       } else if it.has("level") { // Normal Chapters
   
         if element.body.has("text") and element.body.text == "Acknowledgement" {
@@ -166,7 +229,10 @@
           )
     
           if lvl == 1 {
-            v(toc_mjr_spc.get())
+            if num == 1 {
+              v(toc_mjr_spc.get() * 0.2)
+            }
+            v(toc_mjr_spc.get() * 0.8)
             grid_data.push("Chapter " + num)
           } else {
             for i in range(lvl - 1) {
@@ -195,16 +261,7 @@
       let caption = it.element.caption.body
       let dots = box(width: 1fr, align(right, repeat(gap: 5pt)[.]))
   
-      let columns = (otln_chp_primary_spc.get(), 1fr)
-
-      if kind == table {
-        let fmj = it.element.location()
-        let laksdf = counter(figure.where(kind: table)).display()
-        let fmja = it.element.caption.counter.at(it.element.location())
-      } else if kind != image {
-        panic("Only tables and images are supported! This may be a bug.")
-      }
-
+      let columns = (otln_chp_primary_spc.get(), 1fr, 2em)
 
       if figure_num == 1 {
         v(otln_new_chp_spc.get())
@@ -214,8 +271,9 @@
         columns: columns,
         elem_typ + " " + elem_num + ":",
         par(leading: 0.5em, spacing: 0.4em)[#context {
-          caption + " " + dots + " " + it.page
-        }]
+          caption + " " + dots + " "
+        }],
+        align(bottom+right, it.page)
       )
     }
   }
@@ -259,13 +317,18 @@
   pagebreak()
   v(1fr)
   align(center)[
-    Copyright #emoji.copyright #author, #today.display("[year]")
+    #emoji.copyright #author, #today.display("[year]")
     
     All rights reserved.
   ]
   
   pagebreak()
   set page(numbering: "i")
+
+  {
+    show heading: none
+    PreambleChapter("Dissertation Approval")
+  }
   
   align(center)[
     The Dissertation of #author is approved, and it is acceptable \
@@ -280,28 +343,20 @@
     #v(1fr)
   ]
   
-  pagebreak()
-  
   set par(
     leading: 2em,  
     spacing: 2em,
-    first-line-indent: 4em,
+    first-line-indent: 0.5in,
+    justify: true
   ) 
   show list: set block(spacing: 2em)
     
   pagebreak()
   
-  set par(
-    leading: 2em,  
-    spacing: 2em,
-    first-line-indent: 4em,
-  ) 
-  show list: set block(spacing: 2em)
-  
   
   if dedication != none {
     PreambleChapter("Dedication")
-    align(center, dedication)  
+    dedication
     pagebreak()
   }
 
@@ -312,29 +367,36 @@
   }
   
   context {
+    PreambleChapter("Table of Contents")
     par(leading: otln_leading_spc.get(), spacing: 0em)[
-      #outline(title: [TABLE OF CONTENTS])
+      #outline(title: none)
     ]
   }
   pagebreak()
 
   context {
-    par(leading: otln_leading_spc.get(), spacing: 0em)[
-      #outline(
-        title: [LIST OF FIGURES],
-        target: figure.where(kind: image),
-      )
-    ]
+    if enable_list_of_figures {
+      PreambleChapter("List of Figures")
+      par(leading: otln_leading_spc.get(), spacing: 0em)[
+        #outline(
+          title: none,
+          target: figure.where(kind: image),
+        )
+      ]
+    }
   }
   pagebreak()
 
   context {
-    par(leading: otln_leading_spc.get(), spacing: 0em)[
-      #outline(
-        title: [LIST OF TABLES],
-        target: figure.where(kind: table),
-      )
-    ]
+    if enable_list_of_tables {
+      PreambleChapter("List of Tables")
+      par(leading: otln_leading_spc.get(), spacing: 0em)[
+        #outline(
+          title: none,
+          target: figure.where(kind: table),
+        )
+      ]
+    }
   }
   
   pagebreak()
@@ -375,26 +437,27 @@
     publications
   }
 
+  if enable_field_of_study {
+    PreambleChapter("Field of Study")
+    
+    par(
+        leading: 0.5em,  
+        spacing: 0.5em,
+        first-line-indent: 0em,
+      )[
+        Major Field: #subject
   
-  PreambleChapter("Field of Study")
+        #context [
+          #h(prof_indent.get()) Studies in #research_topic
+        ]
   
-  par(
-      leading: 0.5em,  
-      spacing: 0.5em,
-      first-line-indent: 0em,
-    )[
-      Major Field: #subject
-
-      #context [
-        #h(prof_indent.get()) Studies in Research topic
-      ]
-
-      #for person in committee {
-        if person.chair {
-          CommitteeProf(person)
+        #for person in committee {
+          if person.chair {
+            CommitteeProf(person)
+          }
         }
-      }
-  ]
+    ]
+  }
 
   pagebreak()
   
@@ -421,9 +484,9 @@
       }
       
       #v(1em)
-
-      #abstract
     ]
+    abstract
+    
   }
   
   set page(numbering: "1")
@@ -435,31 +498,36 @@
   }
   
   set heading(
-      numbering: (..) => "Chapter " + counter(heading).display("1"),
+      numbering: (..) => counter(heading).display("1.1"),
       supplement: ""
   )
+
+  show heading.where(level: 1): set heading(
+    supplement: [Chapter],
+  )
+
   show heading: it => context {
+    set text(style: "normal", weight: "regular")
+    
     if it.level == 1 {
-      // i-figured.reset-counters(it)
+      set text(1.6em, weight: "bold")
+      set par(leading: 2em, justify: false)
+      
       counter(figure.where(kind: image)).update(0)
       counter(figure.where(kind: table)).update(0)
       pagebreak()
-      text(1.8em, style: "normal", weight: "bold")[
-        #par(leading: 0.5em, justify: false)[
-          #{
-            "Chapter "
-            counter(heading).display("1.1.1")
-          } #v(-1.8em)
-          #linebreak()
-          #it.body
-        ]
-      ]
-    } else {
-      if it.body.has("text") and it.body.text == "Acknowledgement" {    
-        h(-4em) + text(1.5em, style: "normal", weight: "regular")[#it.body #linebreak()]      
-      } else {
-        h(-4em) + text(1.5em, style: "normal", weight: "regular")[#counter(heading).display("1.1.1") #it.body #linebreak()]
+      {
+        "Chapter "
+        counter(heading).display("1.1.1")
+        linebreak()
       }
+      it.body
+    } else {
+        set text(1em + 0.8em/it.level, weight: "bold")
+        it
+        v(-2em)
+        linebreak()
+        parbreak()
     }
   }
 

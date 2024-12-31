@@ -34,12 +34,15 @@
   <a href="#vita"><b>vita</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
   <a href="#publications"><b>publications</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
   <a href="#introduction"><b>introduction</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#enable_field_of_study"><b>enable_field_of_study</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/bool/">bool</a>,
+  <a href="#enable_field_of_study"><b>research_topic</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/none/">none</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/str/">str</a> | <a target="_blank" href="https://typst.app/docs/reference/foundations/content/">content</a>,
+  <a href="#enable_list_of_tables"><b>enable_list_of_tables</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/bool/">bool</a>,
+  <a href="#enable_list_of_tables"><b>enable_list_of_figures</b></a>: <a target="_blank" href="https://typst.app/docs/reference/foundations/bool/">bool</a>,
   <b>doc</b>,
 )
 </pre>
 
 <!--AUTO-GENERATED-DOCS-BEGIN-->
-Parsing file: ucsd_thesis.typ
 ## Arguments
 
 ### `subject`
@@ -129,6 +132,30 @@ Introduction of the thesis. Omitted if none
 
 
 *Default Value:* `none`
+
+### `enable_field_of_study`
+Enable field of study section
+
+
+*Default Value:* `false`
+
+### `research_topic`
+Research Topic for Field of Study
+
+
+*Default Value:* `none`
+
+### `enable_list_of_tables`
+Enables List of Table page
+
+
+*Default Value:* `true`
+
+### `enable_list_of_figures`
+Enables List of Table page
+
+
+*Default Value:* `true`
 
 
 

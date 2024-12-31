@@ -6,8 +6,6 @@ def parse_typst_states_and_args(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    print("Parsing file:", file_path)
-
     # Regex for matching state variables along with the preceding comment:
     #  - Captures a comment line (`// ...`) right before a `#let name = state("...", ...)` pattern.
     #  - The group references are:
