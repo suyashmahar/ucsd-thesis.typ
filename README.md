@@ -10,6 +10,15 @@ Created using Typst v12.0.
 
 </p>
 
+Supports:  
+
+1. Simple template that auto updates dates, student/comittee names
+2. Dedication page (Optional)
+3. Epigraph page (Optional)
+4. List of figures (Optional)
+5. List of tables (Optional)
+
+
 <br clear="right"/>
 
 ### Example usage
