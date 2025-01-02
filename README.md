@@ -1,6 +1,17 @@
-# UCSD Thesis Template for Typst
 
-## Example usage
+<h1>UCSD Thesis Template for Typst</h1>
+
+<a href="example.pdf"><img align="right" width="400vw" src="preview.png"/></a>
+Checkout the generated example by clicking the preview to the right.
+
+The thesis follows the [UCSD guidelines](https://grad.ucsd.edu/_files/academics/FormattingManual2023-24updated4.3.24.pdf).
+
+Created using Typst v12.0.
+
+<br clear="right"/>
+
+### Example usage
+
 
 ```typ
 #import "ucsd_thesis.typ": ucsd_thesis
