@@ -403,9 +403,9 @@
           target: figure.where(kind: image),
         )
       ]
+      pagebreak()
     }
   }
-  pagebreak()
 
   context {
     if enable_list_of_tables {
@@ -416,10 +416,10 @@
           target: figure.where(kind: table),
         )
       ]
+      pagebreak()
     }
   }
   
-  pagebreak()
 
   if abbrv != none {
     PreambleChapter("LIST OF ABBREVIATIONS")
@@ -479,7 +479,9 @@
     ]
   }
 
-  pagebreak()
+  if vita != none or publications != none or enable_field_of_study {
+    pagebreak()
+  }
   
   if abstract != none {
     
