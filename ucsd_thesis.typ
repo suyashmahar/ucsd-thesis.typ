@@ -149,7 +149,8 @@
   )
 
   show table.cell: it => text(weight: "regular")[#it]
-  
+  show table.cell: it => par(leading: 0.5em)[#it]
+
   show figure: it => block(width: 100%)[#align(center)[
      // Captions for Tables should be above the table (Manual, Pg 32)
      #let body_before_caption = it.kind != table
@@ -187,6 +188,25 @@
      }
    ]
   ]
+
+  show ref: it => {
+    let auto_supplement = (
+      "table": "Table",
+      "image": "Figure",
+    )
+
+    let el = it.element   
+    
+    if el != none and el.has("kind") and el.kind in (table, image) {
+      // Override references.
+      let kind_str = [#el.kind].text
+      let text = auto_supplement.at(kind_str) + [ ] +[#counter(heading).at(el.location()).first()\.#counter(figure.where(kind: el.kind)).at(el.location()).first()]
+      link(it.target)[#text]
+    } else {
+      // Other references as usual.
+      it
+    }
+  }
   
   set outline(fill: align(right, repeat(gap: 5pt)[.]))
   
