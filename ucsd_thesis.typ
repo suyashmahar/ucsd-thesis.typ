@@ -3,7 +3,7 @@
 // spc => spacing
 // mjr => major
 
-#let prof_indent = state("ut_prof_indent", 1cm)
+#let prof_indent = 0.5in
 
 // Spacing before the first entry of the chapter in the outline
 #let otln_new_chp_spc = state("ut_otln_new_chp_spc", 1em)
@@ -15,7 +15,7 @@
 #let otln_chp_secondary_spc = state("ut_otln_chp_secondary_spc", 3em)
 
 // Spacing between the major entries in the table of contents
-#let toc_mjr_spc = state("ut_toc_mjr_spc", 2em)
+#let toc_mjr_spc = 2em
 
 // Leading of the outline (table of contents, list of figures, etc.)
 #let otln_leading_spc = state("ut_otln_leading_spc", 1em)
@@ -25,7 +25,7 @@
 
 #let CommitteeProf(person, indent: true) = context {
   if indent {
-    h(prof_indent.get())
+    h(prof_indent)
   }
   
   if person.title != none {
@@ -50,8 +50,8 @@
 
 #let ThesisBibliography(..files, full: false, style: "association-for-computing-machinery", title: "Bibliography") = {
   par(
-    leading: 0.5em,
-    spacing: 1em
+    leading: 1em,
+    spacing: 2em
   )[
     #show heading.where(level: 1): it => context {
       pagebreak()
@@ -141,7 +141,7 @@
     paper: "us-letter",
     number-align: center,
     numbering: none,
-    margin: (top: 1.5in, left: 1in, right: 1in)
+    margin: (top: 1.5in, left: 1.01in, right: 1.01in)
   )
 
   set par(
@@ -202,8 +202,16 @@
       let kind_str = [#el.kind].text
       let text = auto_supplement.at(kind_str) + [ ] +[#counter(heading).at(el.location()).first()\.#counter(figure.where(kind: el.kind)).at(el.location()).first()]
       link(it.target)[#text]
-    } else {
+    } else if el != none and el.has("level") {
       // Other references as usual.
+      let num = numbering("1.1.1", ..counter(heading).at(it.element.location()))
+      let text = "Section"
+      if it.element.level == 1 {
+        text = "Chapter"
+      }
+      link(it.target)[#text #num]
+      // link(it.target)[#text #num]
+    } else {
       it
     }
   }
@@ -216,7 +224,7 @@
       let body = it.body
 
       if element.numbering == none { // Preamble Chapters
-        v(toc_mjr_spc.get())
+        v(toc_mjr_spc)
         if body.has("text") { // Bibliography
           body.text
           box(width: 1fr, it.fill)
@@ -249,12 +257,14 @@
           )
     
           if lvl == 1 {
-            if num == 1 {
-              v(toc_mjr_spc.get() * 0.2)
+            if num == "1" {
+              v(toc_mjr_spc + 0.1em)
+            } else if num == "2" { 
+              v(1.1em)        
             }
-            v(toc_mjr_spc.get() * 0.8)
+            v(-0.1em)
             grid_data.push("Chapter " + num)
-          } else {
+          }  else {
             for i in range(lvl - 1) {
               grid_data.push("")
             }
@@ -318,7 +328,7 @@
   ]
 
     
-  [Committee in charge:] + linebreak()
+  [Committee in charge:] + linebreak() + linebreak()
 
 
   for person in committee {
@@ -337,7 +347,7 @@
   pagebreak()
   v(1fr)
   align(center)[
-    #emoji.copyright #author, #today.display("[year]")
+    #emoji.copyright \ #author, #today.display("[year]")
     
     All rights reserved.
   ]
@@ -468,7 +478,7 @@
         Major Field: #subject
   
         #context [
-          #h(prof_indent.get()) Studies in #research_topic
+          #h(prof_indent) Studies in #research_topic
         ]
   
         #for person in committee {
@@ -485,11 +495,11 @@
   
   if abstract != none {
     
-    v(2.5in)
+    v(1in)
     PreambleChapter("Abstract of Dissertation")
     
     align(center)[
-      #title
+      #strong(title)
       #v(1em)  
       by
       #v(1em)  
@@ -516,7 +526,7 @@
 
   if introduction != none {
     PreambleChapter("Introduction")
-    introduction
+    [#introduction]
   }
   
   set heading(
@@ -546,12 +556,19 @@
       it.body
     } else {
         set text(1em + 0.8em/it.level, weight: "bold")
-        it
+        // it
+        block({
+          box(width: 45pt, counter(heading).display())
+          it.body
+        })
         v(-2em)
         linebreak()
         parbreak()
     }
   }
+
+  // Set footnote size
+  show footnote.entry: set text(size: 10pt)
 
   doc
 }
