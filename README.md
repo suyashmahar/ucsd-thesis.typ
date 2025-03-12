@@ -1,3 +1,4 @@
+![Build Status](https://github.com/suyashmahar/ucsd-thesis.typ/actions/workflows/build.yml/badge.svg)
 
 <h1>UCSD Thesis Template for Typst</h1>
 <p align="center" width="100%">
@@ -6,7 +7,7 @@
 <i>Checkout the generated example by clicking the preview above.</i>
 
 The thesis follows the [UCSD guidelines](https://grad.ucsd.edu/_files/academics/FormattingManual2023-24updated4.3.24.pdf).<br>
-Created using Typst v12.0.
+Created using Typst v13.0.
 
 </p>
 
