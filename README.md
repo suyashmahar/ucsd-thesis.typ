@@ -1,4 +1,4 @@
-![Build Status](https://github.com/suyashmahar/ucsd-thesis.typ/actions/workflows/build.yml/badge.svg)
+![Build Status](https://github.com/suyashmahar/ucsd-thesis.typ/workflows/Build%20Typst%20document/badge.svg)
 
 <h1>UCSD Thesis Template for Typst</h1>
 <p align="center" width="100%">
@@ -24,6 +24,7 @@ Supports:
 
 ### Example usage
 
+Here is a quick start example, for a more complete thesis, visit [suyashmahar/suyash-thesis](https://github.com/suyashmahar/suyash-thesis).
 
 ```typ
 #import "ucsd_thesis.typ": ucsd_thesis
