@@ -1,4 +1,4 @@
-name: Build Typst document
+name: Build
 on: push
 
 jobs:

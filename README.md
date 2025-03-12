@@ -1,4 +1,4 @@
-![Build Status](https://github.com/suyashmahar/ucsd-thesis.typ/workflows/Build%20Typst%20document/badge.svg)
+![Build Status](https://github.com/suyashmahar/ucsd-thesis.typ/workflows/Build/badge.svg)
 
 <h1>UCSD Thesis Template for Typst</h1>
 <p align="center" width="100%">
