@@ -3,27 +3,30 @@
 // spc => spacing
 // mjr => major
 
+#let margin_electronic = (top: 1in, bottom: 1in, left: 1.01in, right: 1.01in)
+#let margin_book = (top: 1in, inside: 1.27in, outside: 0.75in, bottom: 1in)
+
 #let prof_indent = 0.5in
 
 // Spacing before the first entry of the chapter in the outline
-#let otln_new_chp_spc = state("ut_otln_new_chp_spc", 1em)
+#let otln_new_chp_spc = 1em
 
 // Spacing between the chapter number and the chapter title in the outline
-#let otln_chp_primary_spc = state("ut_otln_chp_primary_spc", 6em)
+#let otln_chp_primary_spc = 6em
 
 // Additional indentation of sub-headings for each level in the outline
-#let otln_chp_secondary_spc = state("ut_otln_chp_secondary_spc", 3em)
+#let otln_chp_secondary_spc = 3em
 
 // Spacing between the major entries in the table of contents
 #let toc_mjr_spc = 2em
 
 // Leading of the outline (table of contents, list of figures, etc.)
-#let otln_leading_spc = state("ut_otln_leading_spc", 1em)
+#let otln_leading_spc = 1em
 
 // Columns for the list of abbreviations. The first column is for the abbreviation and the second column is for the full form.
 #let abbrv_columns = state("ut_abbrv_columns", (0.25fr, 1fr))
 
-#let CommitteeProf(person, indent: true) = context {
+#let CommitteeProf(person, indent: true, cochairs: false) = context {
   if indent {
     h(prof_indent)
   }
@@ -33,7 +36,11 @@
   }
   person.name
   if person.chair {
-    [, Chair]
+    if cochairs {
+      [, Co-chair]
+    } else {
+      [, Chair]
+    }
   }
   linebreak()
 } 
@@ -49,25 +56,22 @@
 }
 
 #let ThesisBibliography(..files, full: false, style: "association-for-computing-machinery", title: "Bibliography") = {
-  par(
-    leading: 1em,
-    spacing: 2em
-  )[
-    #show heading.where(level: 1): it => context {
-      pagebreak()
-      text(1.8em, style: "normal", weight: "bold")[
-        #par(leading: 1em, justify: false)[
-          #it.body
-        ]
-      ]
-    }
-    #bibliography(
-      files.pos(),
-      full: full,
-      style: style, 
-      title: title
-    )
+  pagebreak()
+  set par(leading: 1em, spacing: 2em)
+  heading(supplement: none, numbering: none)[
+    #text(title)
   ]
+  // show heading.where(level: 1): it => context {
+  //   set text(1.8em, style: "normal", weight: "bold")
+  //   set par(leading: 1em, justify: false)
+  //   it.body
+  // }
+  bibliography(
+    files.pos(),
+    full: full,
+    style: style, 
+    title: none
+  )
 }
 
 #let ucsd_thesis(
@@ -134,14 +138,22 @@
 
   // Enables List of Table page
   enable_list_of_figures: true,
+
+  // Formatting for the book version
+  enable_book_formatting: false,
   
   doc,
 ) = {
+  let margin = margin_electronic
+  if enable_book_formatting {
+    margin = margin_book
+  }
+  
   set page(
     paper: "us-letter",
     number-align: center,
     numbering: none,
-    margin: (top: 1.5in, left: 1.01in, right: 1.01in)
+    margin: margin
   )
 
   set par(
@@ -149,18 +161,18 @@
   )
 
   show table.cell: it => text(weight: "regular")[#it]
-  show table.cell: it => par(leading: 0.5em)[#it]
+  show table.cell: it => [
+    #set par(leading: 0.5em)
+    #it
+  ]
 
   show figure: it => block(width: 100%)[#align(center)[
      // Captions for Tables should be above the table (Manual, Pg 32)
      #let body_before_caption = it.kind != table
+     #set par(leading: 1em)
      
      #let caption = none
-     #let body = par(leading: 1em)[
-       #it.body
-     ]
-
-     #set par(leading: 1em)
+     #let body = it.body
 
      #if it.has("caption") {
          if it.caption != none and it.caption.has("body") {
@@ -216,24 +228,27 @@
     }
   }
   
-  set outline(fill: align(right, repeat(gap: 5pt)[.]))
+  // set outline(fill: align(right, repeat(gap: 5pt)[.]))
   
   show outline.entry : it => context {
+    set par(first-line-indent: 0em, spacing: 0em)
     if it.element.func() == heading { // Table of contents outline
       let element = it.element
-      let body = it.body
+      let body = it.body()
 
       if element.numbering == none { // Preamble Chapters
+        let heading_type = body.children.at(1).func() == text
         v(toc_mjr_spc)
-        if body.has("text") { // Bibliography
-          body.text
+        if heading_type { // Bibliography
+          body.children.at(1)
           box(width: 1fr, it.fill)
-          " " + it.page
+          " " + it.page()
         } else {
+          let test = body.children.at(1)
           let name = body.children.at(1).children.at(0).child
           name + " "
           box(width: 1fr, it.fill)
-          " " + it.page
+          " " + it.page()
         }
       } else if it.has("level") { // Normal Chapters
   
@@ -245,8 +260,8 @@
           let grid_data = ()
           let lvl = it.level
 
-          let prim_spc = otln_chp_primary_spc.get()
-          let sec_spc = otln_chp_secondary_spc.get()
+          let prim_spc = otln_chp_primary_spc
+          let sec_spc = otln_chp_secondary_spc
           
           let columns = (
             "1": (prim_spc, 1fr),
@@ -257,21 +272,18 @@
           )
     
           if lvl == 1 {
-            if num == "1" {
-              v(toc_mjr_spc + 0.1em)
-            } else if num == "2" { 
-              v(1.1em)        
-            }
             v(-0.1em)
             grid_data.push("Chapter " + num)
           }  else {
+            v(-1.35em)
             for i in range(lvl - 1) {
               grid_data.push("")
             }
             
             grid_data.push(num)
           }        
-          grid_data.push(element.body + box(width: 1fr, it.fill) + " " + it.page)
+          grid_data.push(element.body + box(width: 1fr, it.fill) + " " + it.page()
+        )
     
           grid(
             columns: columns.at(str(lvl)),
@@ -291,19 +303,22 @@
       let caption = it.element.caption.body
       let dots = box(width: 1fr, align(right, repeat(gap: 5pt)[.]))
   
-      let columns = (otln_chp_primary_spc.get(), 1fr, 2em)
+      let columns = (otln_chp_primary_spc, 1fr, 2em)
+
+      v(-0.35em)
 
       if figure_num == 1 {
-        v(otln_new_chp_spc.get())
+        v(otln_new_chp_spc)
       }
       
       grid(
         columns: columns,
         elem_typ + " " + elem_num + ":",
-        par(leading: 0.5em, spacing: 0.4em)[#context {
+        {
+          set par(leading: 0.5em, spacing: 0.4em)
           caption + " " + dots + " "
-        }],
-        align(bottom+right, it.page)
+        },
+        align(bottom+right, it.page())
       )
     }
   }
@@ -330,9 +345,16 @@
     
   [Committee in charge:] + linebreak() + linebreak()
 
+  let chair_count = 0
 
   for person in committee {
-    CommitteeProf(person)
+    if person.chair {
+      chair_count += 1
+    }
+  }
+
+  for person in committee {
+    CommitteeProf(person, cochairs: chair_count > 1)
   }
 
   
@@ -398,38 +420,36 @@
   
   context {
     PreambleChapter("Table of Contents")
-    par(leading: otln_leading_spc.get(), spacing: 0em)[
-      #outline(title: none)
-    ]
+    // par(leading: otln_leading_spc, spacing: 0em)[
+    outline(title: none)
+    // ]
   }
   pagebreak()
 
   context {
     if enable_list_of_figures {
       PreambleChapter("List of Figures")
-      par(leading: otln_leading_spc.get(), spacing: 0em)[
-        #outline(
-          title: none,
-          target: figure.where(kind: image),
-        )
-      ]
-      pagebreak()
+      set par(leading: otln_leading_spc, spacing: 0em)
+      outline(
+        title: none,
+        target: figure.where(kind: image),
+      )
     }
   }
+  pagebreak()
 
   context {
     if enable_list_of_tables {
       PreambleChapter("List of Tables")
-      par(leading: otln_leading_spc.get(), spacing: 0em)[
-        #outline(
-          title: none,
-          target: figure.where(kind: table),
-        )
-      ]
-      pagebreak()
+      set par(leading: otln_leading_spc, spacing: 0em)
+      outline(
+        title: none,
+        target: figure.where(kind: table),
+      )
     }
   }
   
+  pagebreak()
 
   if abbrv != none {
     PreambleChapter("LIST OF ABBREVIATIONS")
@@ -470,33 +490,28 @@
   if enable_field_of_study {
     PreambleChapter("Field of Study")
     
-    par(
-        leading: 0.5em,  
-        spacing: 0.5em,
-        first-line-indent: 0em,
-      )[
-        Major Field: #subject
-  
-        #context [
-          #h(prof_indent) Studies in #research_topic
-        ]
-  
-        #for person in committee {
-          if person.chair {
-            CommitteeProf(person)
-          }
+    [
+      #set par(leading: 0.5em, spacing: 0.5em, first-line-indent: 0em)
+      
+      Major Field: #subject
+
+      #h(prof_indent) Studies in #research_topic
+
+      #for person in committee {
+        if person.chair {
+          CommitteeProf(person)
         }
+      }
     ]
+    
   }
 
-  if vita != none or publications != none or enable_field_of_study {
-    pagebreak()
-  }
+  pagebreak()
   
   if abstract != none {
     
-    v(1in)
-    PreambleChapter("Abstract of Dissertation")
+    v(1.51in)
+    PreambleChapter("Abstract of the Dissertation")
     
     align(center)[
       #strong(title)
